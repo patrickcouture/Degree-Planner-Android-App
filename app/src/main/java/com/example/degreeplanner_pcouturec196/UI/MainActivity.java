@@ -21,4 +21,16 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, TermList.class);
         startActivity(i);
     }
+
+    public void launchCourses (View v) {
+
+        Intent i = new Intent(this, CourseList.class);
+        startActivity(i);
+    }
+
+    public void launchAssessments (View v) {
+
+        Intent i = new Intent(this, AssessmentList.class);
+        startActivity(i);
+    }
 }
