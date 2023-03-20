@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">DegreePlanner - PCouture C196</string>
+    <string name="channel_name">NotificationChannel</string>
+    <string name="channel_description">Notifications for Degree Planner App</string>
 
     <string-array name="course_status">
         <item>Plan To Take</item>

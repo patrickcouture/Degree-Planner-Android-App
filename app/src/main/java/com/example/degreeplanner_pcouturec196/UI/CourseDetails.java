@@ -4,8 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Notification;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,11 +27,14 @@ import com.example.degreeplanner_pcouturec196.entities.Assessments;
 import com.example.degreeplanner_pcouturec196.entities.Courses;
 import com.example.degreeplanner_pcouturec196.entities.Terms;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
 public class CourseDetails extends AppCompatActivity {
 
@@ -87,7 +97,8 @@ public class CourseDetails extends AppCompatActivity {
         courseInstructorPhone = getIntent().getStringExtra("courseInstructorPhone");
         courseInstructorEmail = getIntent().getStringExtra("courseInstructorEmail");
         termId = getIntent().getIntExtra("termId", -1);
-
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(myFormat, Locale.US);
 
 
         editCourseName.setText(courseName);
@@ -127,6 +138,24 @@ public class CourseDetails extends AppCompatActivity {
 
 
 
+
+        //From DatePicker Video Presented by Carolyn J. Sher-Decusatis
+        editCourseStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Date date;
+                String info = editCourseStart.getText().toString();
+                try {
+                    myCalendarStart.setTime(simpleDateFormat.parse(info));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                new DatePickerDialog(CourseDetails.this, cStartDate, myCalendarStart
+                        .get(Calendar.YEAR), myCalendarStart.get(Calendar.MONTH), myCalendarStart.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
         //From DatePicker Video Presented by Carolyn J. Sher-Decusatis
         cStartDate = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -134,19 +163,20 @@ public class CourseDetails extends AppCompatActivity {
                 myCalendarStart.set(Calendar.YEAR, year);
                 myCalendarStart.set(Calendar.MONTH, monthofYear);
                 myCalendarStart.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                String myFormat = "MM/dd/yy";
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(myFormat, Locale.US);
+
                 updateLabelStart();
             }
         };
+
         //From DatePicker Video Presented by Carolyn J. Sher-Decusatis
-        editCourseStart.setOnClickListener(new View.OnClickListener() {
+        editCourseEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new DatePickerDialog(CourseDetails.this, cStartDate, myCalendarStart
-                        .get(Calendar.YEAR), myCalendarStart.get(Calendar.MONTH), myCalendarStart.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(CourseDetails.this, cEndDate, myCalendarStart.get(Calendar.YEAR),
+                        myCalendarStart.get(Calendar.MONTH), myCalendarStart.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
+
         //From DatePicker Video Presented by Carolyn J. Sher-Decusatis
         cEndDate = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -159,14 +189,8 @@ public class CourseDetails extends AppCompatActivity {
                 updateLabelEnd();
             }
         };
-        //From DatePicker Video Presented by Carolyn J. Sher-Decusatis
-        editCourseEnd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new DatePickerDialog(CourseDetails.this, cEndDate, myCalendarStart.get(Calendar.YEAR),
-                        myCalendarStart.get(Calendar.MONTH), myCalendarStart.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
+
+
 
         Button button = findViewById(R.id.cDetailsSave);
         button.setOnClickListener(view -> {
@@ -215,6 +239,85 @@ public class CourseDetails extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         editCourseEnd.setText(sdf.format(myCalendarStart.getTime()));
+    }
+
+    //From Bicycle Shop Video - Dolphin Part 4 by Carolyn J. Sher-Decusatis
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_coursedetails, menu);
+        return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+
+            case R.id.courseSave:
+                Courses course;
+                if (courseId == -1) {
+                    if(repository.getAllCourses().size() == 0)
+                        courseId = 1;
+                    else
+                        courseId = repository.getAllCourses().get(repository.getAllCourses().size() - 1).getCourseId() + 1;
+                        course = new Courses(courseId, editCourseName.getText().toString(), editCourseStart.getText().toString(),
+                            editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
+                            termId,editCourseInst.getText().toString(),
+                            editInstPhone.getText().toString(), editInstEmail.getText().toString());
+                        repository.insert(course);
+                        Toast.makeText(getApplicationContext(), "New Course added!", Toast.LENGTH_SHORT).show();
+                } else {
+                    course = new Courses(courseId, editCourseName.getText().toString(), editCourseStart.getText().toString(),
+                            editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
+                            termId,editCourseInst.getText().toString(),
+                            editInstPhone.getText().toString(), editInstEmail.getText().toString());
+                    repository.update(course);
+                    Toast.makeText(getApplicationContext(), "Course updated!", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+
+
+
+            case R.id.notifyCStart:
+                String startDateFromScreen = editCourseStart.getText().toString();
+                String myFormat = "MM/dd/yy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                Date myDate = null;
+                try {
+                    myDate = sdf.parse(startDateFromScreen);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Long trigger = myDate.getTime();
+                Intent intent = new Intent(CourseDetails.this, MyReceiver.class);
+                intent.setAction("CourseStartNotification");
+                intent.putExtra("courseStart", " FYI: " + courseName + " is starting on: " + startDateFromScreen);
+                PendingIntent sender = PendingIntent.getBroadcast(CourseDetails.this, ++MainActivity.numAlert,intent,PendingIntent.FLAG_IMMUTABLE);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
+                break;
+
+
+            case R.id.notifyCEnd:
+                String endDateFromScreen = editCourseEnd.getText().toString();
+                String myFormat1 = "MM/dd/yy";
+                SimpleDateFormat sdf1 = new SimpleDateFormat(myFormat1, Locale.US);
+                Date myDate1 = null;
+                try {
+                    myDate1 = sdf1.parse(endDateFromScreen);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Long trigger1 = myDate1.getTime();
+                Intent intent1 = new Intent(CourseDetails.this, MyReceiver.class);
+                intent1.setAction("CourseEndNotification");
+                intent1.putExtra("courseEnd", " FYI: " + courseName + " is ending on: " + endDateFromScreen);
+                PendingIntent sender1 = PendingIntent.getBroadcast(CourseDetails.this, ++MainActivity.numAlert,intent1,PendingIntent.FLAG_IMMUTABLE);
+                AlarmManager alarmManager1 = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                alarmManager1.set(AlarmManager.RTC_WAKEUP, trigger1, sender1);
+                break;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 

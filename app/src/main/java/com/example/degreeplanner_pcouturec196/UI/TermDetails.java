@@ -34,6 +34,8 @@ public class TermDetails extends AppCompatActivity {
     String endDate;
     int termId;
     Terms term;
+    Terms currentTerm;
+    int numCourses;
     Repository repository;
     DatePickerDialog.OnDateSetListener termstartDate;
     DatePickerDialog.OnDateSetListener termEndDate;
@@ -112,8 +114,8 @@ public class TermDetails extends AppCompatActivity {
             }
         });
 
-        Button button = findViewById(R.id.saveTermDetails);
-        button.setOnClickListener(view -> {
+        Button saveButton = findViewById(R.id.saveTermDetails);
+        saveButton.setOnClickListener(view -> {
             if(termId == -1){
                 term = new Terms(0, editTermName.getText().toString(), editTermStart.getText().toString(), editTermEnd.getText().toString());
                 repository.insert(term);
@@ -130,6 +132,25 @@ public class TermDetails extends AppCompatActivity {
             }
 
 
+        });
+
+        Button deleteButton = findViewById(R.id.deleteTermDetails);
+        deleteButton.setOnClickListener(view -> {
+            for (Terms ter : repository.getAllTerms()) {
+                if (ter.getTermId() == termId) currentTerm = ter;
+            }
+            numCourses = 0;
+            for(Courses courses : repository.getAllCourses()) {
+                if(courses.getTermId() == termId)   ++numCourses;
+            }
+            if(numCourses == 0) {
+                repository.delete(currentTerm);
+                Toast.makeText(TermDetails.this, currentTerm.getTermName() + " was deleted", Toast.LENGTH_LONG).show();
+                finish();
+            } else {
+                Toast.makeText(TermDetails.this, "Can't Delete a Term that has a Course in it", Toast.LENGTH_LONG).show();
+
+            }
         });
 
 
