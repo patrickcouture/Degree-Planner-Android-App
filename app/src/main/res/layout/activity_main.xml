@@ -8,7 +8,7 @@
     tools:context=".UI.MainActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/homelogo"
         android:layout_width="293dp"
         android:layout_height="62dp"
         android:layout_marginTop="276dp"
@@ -36,7 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/homelogo"
         app:layout_constraintVertical_bias="0.878" />
 
     <ImageView
@@ -46,7 +46,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:src="@drawable/kisspng_student_academic_degree_westcliff_university_gradu_graduation_season_element_5a74cdaf8f4481_9119270315176042715868"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/homelogo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
