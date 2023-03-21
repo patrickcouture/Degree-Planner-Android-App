@@ -6,22 +6,26 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/cAssessNameTextView"
-        android:layout_width="125dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="24dp"
+        android:id="@+id/courseItemTextView"
+        android:layout_width="170dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="8dp"
         android:text="TextView"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/cAssessDateTextView"
-        android:layout_width="125dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="115dp"
+        android:id="@+id/courseStatusTextView"
+        android:layout_width="155dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="52dp"
         android:layout_marginTop="8dp"
         android:text="TextView"
-        app:layout_constraintStart_toEndOf="@+id/cAssessNameTextView"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/courseItemTextView"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

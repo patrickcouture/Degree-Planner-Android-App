@@ -42,6 +42,7 @@ public class AssessmentList extends AppCompatActivity {
         recyclerView.setAdapter(assessmentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         assessmentAdapter.setAssessments(allAssessments);
+        assessmentAdapter.notifyDataSetChanged();
 
 
 
@@ -57,6 +58,7 @@ public class AssessmentList extends AppCompatActivity {
         recyclerView.setAdapter(assessmentAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         assessmentAdapter.setAssessments(allAssessments);
+        assessmentAdapter.notifyDataSetChanged();
 
     }
 

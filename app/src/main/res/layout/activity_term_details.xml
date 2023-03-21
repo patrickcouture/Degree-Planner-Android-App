@@ -107,8 +107,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/courseRecView"
-        android:layout_width="373dp"
-        android:layout_height="356dp"
+        android:layout_width="371dp"
+        android:layout_height="331dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

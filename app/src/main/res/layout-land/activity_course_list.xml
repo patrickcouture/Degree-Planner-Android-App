@@ -23,7 +23,7 @@
         android:id="@+id/textView"
         android:layout_width="140dp"
         android:layout_height="24dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="65dp"
         android:layout_marginTop="24dp"
         android:text="Course Name"
         android:textAlignment="center"
@@ -47,8 +47,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cListRecView"
-        android:layout_width="393dp"
-        android:layout_height="402dp"
+        android:layout_width="677dp"
+        android:layout_height="269dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"

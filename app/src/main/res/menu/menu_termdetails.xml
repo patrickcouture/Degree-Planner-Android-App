@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Notify Term Start"
+        android:orderInCategory="100"
+        android:id="@+id/notifyTStart"/>
+    <item android:title="Notify Term End"
+        android:orderInCategory="100"
+        android:id="@+id/notifyTEnd"/>
+
+</menu>

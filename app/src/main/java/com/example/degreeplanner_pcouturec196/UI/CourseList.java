@@ -36,11 +36,12 @@ public class CourseList extends AppCompatActivity {
 
         repository = new Repository(getApplication());
         List<Courses> allCourses = repository.getAllCourses();
-        RecyclerView recyclerView = findViewById(R.id.clistRecView);
+        RecyclerView recyclerView = findViewById(R.id.cListRecView);
         final CourseAdapter courseAdapter = new CourseAdapter(this);
         recyclerView.setAdapter(courseAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         courseAdapter.setCourses(allCourses);
+        courseAdapter.notifyDataSetChanged();
 
 
 
@@ -51,11 +52,12 @@ public class CourseList extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         List<Courses> allCourses = repository.getAllCourses();
-        RecyclerView recyclerView = findViewById(R.id.clistRecView);
+        RecyclerView recyclerView = findViewById(R.id.cListRecView);
         final CourseAdapter courseAdapter = new CourseAdapter(this);
         recyclerView.setAdapter(courseAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         courseAdapter.setCourses(allCourses);
+        courseAdapter.notifyDataSetChanged();
 
     }
 }

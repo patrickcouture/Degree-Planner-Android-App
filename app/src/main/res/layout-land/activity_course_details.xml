@@ -8,11 +8,11 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="393dp"
-        android:layout_height="378dp"
+        android:layout_width="492dp"
+        android:layout_height="138dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="230dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -54,7 +54,7 @@
                     android:id="@+id/cStartEdit"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="none"/>
+                    android:inputType="none" />
             </LinearLayout>
 
             <LinearLayout
@@ -72,7 +72,7 @@
                     android:id="@+id/cEndEdit"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="none"/>
+                    android:inputType="none" />
             </LinearLayout>
 
             <LinearLayout
@@ -190,20 +190,19 @@
         android:id="@+id/cDetailsSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="16dp"
         android:backgroundTint="#3F51B5"
         android:text="SAVE"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/cDetailsDeleteBtn"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="122dp"
         android:layout_height="33dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginStart="75dp"
+        android:layout_marginTop="16dp"
         android:text="Course Assessments:"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -211,10 +210,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/courseAssessRecView"
-        android:layout_width="393dp"
-        android:layout_height="141dp"
+        android:layout_width="717dp"
+        android:layout_height="163dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.75"
@@ -225,8 +224,8 @@
         android:id="@+id/textView8"
         android:layout_width="100dp"
         android:layout_height="34dp"
-        android:layout_marginStart="84dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginStart="110dp"
+        android:layout_marginTop="16dp"
         android:text="Assessment Date:"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/textView4"
@@ -236,11 +235,12 @@
         android:id="@+id/cDetailsDeleteBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
         android:backgroundTint="#3F51B5"
         android:text="DELETE"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="159dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cDetailsSave" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

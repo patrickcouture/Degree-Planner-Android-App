@@ -61,13 +61,13 @@ public class CourseDetails extends AppCompatActivity {
     int courseId;
     int termId;
     int assessment;
+    int numAssessments;
+    Courses currentCourse;
     Repository repository;
 
     DatePickerDialog.OnDateSetListener cStartDate;
     DatePickerDialog.OnDateSetListener cEndDate;
     final Calendar myCalendarStart = Calendar.getInstance();
-
-
 
 
     @Override
@@ -116,7 +116,8 @@ public class CourseDetails extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         editCourseTermId.setAdapter(adapter);
         for (Terms t : repository.getAllTerms()) {
-            if (t.getTermId() == termId) editCourseTermId.setSelection(adapter.getPosition(t.getTermName()));
+            if (t.getTermId() == termId)
+                editCourseTermId.setSelection(adapter.getPosition(t.getTermName()));
         }
         editCourseInst.setText(courseInstructor);
         editInstPhone.setText(courseInstructorPhone);
@@ -135,8 +136,7 @@ public class CourseDetails extends AppCompatActivity {
         for (Assessments c : repository.getAllAssessments()) {
             if (c.getCourseId() == courseId) filteredAssessments.add(c);
         }
-
-
+        courseAssessmentAdapter.notifyDataSetChanged();
 
 
         //From DatePicker Video Presented by Carolyn J. Sher-Decusatis
@@ -191,29 +191,27 @@ public class CourseDetails extends AppCompatActivity {
         };
 
 
-
         Button button = findViewById(R.id.cDetailsSave);
         button.setOnClickListener(view -> {
             for (Terms t : repository.getAllTerms()) {
-                if (t.getTermName().equals(editCourseTermId.getSelectedItem()) ) {
+                if (t.getTermName().equals(editCourseTermId.getSelectedItem())) {
                     termId = t.getTermId();
                 }
             }
-            if(courseId == -1){
+            if (courseId == -1) {
 
                 courses = new Courses(0, editCourseName.getText().toString(), editCourseStart.getText().toString(),
                         editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
-                        termId,editCourseInst.getText().toString(),
+                        termId, editCourseInst.getText().toString(),
                         editInstPhone.getText().toString(), editInstEmail.getText().toString());
                 repository.insert(courses);
                 Toast.makeText(getApplicationContext(), "New Course added!", Toast.LENGTH_SHORT).show();
                 finish();
 
-            }
-            else {
+            } else {
                 courses = new Courses(courseId, editCourseName.getText().toString(), editCourseStart.getText().toString(),
                         editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
-                        termId,editCourseInst.getText().toString(),
+                        termId, editCourseInst.getText().toString(),
                         editInstPhone.getText().toString(), editInstEmail.getText().toString());
                 repository.update(courses);
                 Toast.makeText(getApplicationContext(), "Course updated!", Toast.LENGTH_SHORT).show();
@@ -224,10 +222,30 @@ public class CourseDetails extends AppCompatActivity {
 
         });
 
+        Button deleteButton = findViewById(R.id.cDetailsDeleteBtn);
+        deleteButton.setOnClickListener(view -> {
+
+            for (Courses cour : repository.getAllCourses()) {
+                if (cour.getCourseId() == courseId) currentCourse = cour;
+            }
+            numAssessments = 0;
+            for(Assessments assessments : repository.getAllAssessments()) {
+                if(assessments.getCourseId() == courseId)   ++numAssessments;
+            }
+            if(numAssessments == 0) {
+                repository.delete(currentCourse);
+                Toast.makeText(CourseDetails.this, currentCourse.getCourseName() + " was deleted", Toast.LENGTH_LONG).show();
+                finish();
+            } else {
+                Toast.makeText(CourseDetails.this, "Can't Delete a Course that has an Assessment in it", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
 
     }
 
-    private  void updateLabelStart() {
+    private void updateLabelStart() {
         String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
@@ -246,35 +264,22 @@ public class CourseDetails extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_coursedetails, menu);
         return true;
     }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 this.finish();
                 return true;
 
-            case R.id.courseSave:
-                Courses course;
-                if (courseId == -1) {
-                    if(repository.getAllCourses().size() == 0)
-                        courseId = 1;
-                    else
-                        courseId = repository.getAllCourses().get(repository.getAllCourses().size() - 1).getCourseId() + 1;
-                        course = new Courses(courseId, editCourseName.getText().toString(), editCourseStart.getText().toString(),
-                            editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
-                            termId,editCourseInst.getText().toString(),
-                            editInstPhone.getText().toString(), editInstEmail.getText().toString());
-                        repository.insert(course);
-                        Toast.makeText(getApplicationContext(), "New Course added!", Toast.LENGTH_SHORT).show();
-                } else {
-                    course = new Courses(courseId, editCourseName.getText().toString(), editCourseStart.getText().toString(),
-                            editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
-                            termId,editCourseInst.getText().toString(),
-                            editInstPhone.getText().toString(), editInstEmail.getText().toString());
-                    repository.update(course);
-                    Toast.makeText(getApplicationContext(), "Course updated!", Toast.LENGTH_SHORT).show();
-                }
+            case R.id.shareCourseNotes:
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, editCourseNotes.getText().toString());
+                sendIntent.putExtra(Intent.EXTRA_TITLE, courseName + " Notes");
+                sendIntent.setType("text/plain");
+                Intent shareIntent = Intent.createChooser(sendIntent, null);
+                startActivity(shareIntent);
                 return true;
-
 
 
             case R.id.notifyCStart:
@@ -291,10 +296,10 @@ public class CourseDetails extends AppCompatActivity {
                 Intent intent = new Intent(CourseDetails.this, MyReceiver.class);
                 intent.setAction("CourseStartNotification");
                 intent.putExtra("courseStart", " FYI: " + courseName + " is starting on: " + startDateFromScreen);
-                PendingIntent sender = PendingIntent.getBroadcast(CourseDetails.this, ++MainActivity.numAlert,intent,PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent sender = PendingIntent.getBroadcast(CourseDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
-                break;
+                return true;
 
 
             case R.id.notifyCEnd:
@@ -311,15 +316,30 @@ public class CourseDetails extends AppCompatActivity {
                 Intent intent1 = new Intent(CourseDetails.this, MyReceiver.class);
                 intent1.setAction("CourseEndNotification");
                 intent1.putExtra("courseEnd", " FYI: " + courseName + " is ending on: " + endDateFromScreen);
-                PendingIntent sender1 = PendingIntent.getBroadcast(CourseDetails.this, ++MainActivity.numAlert,intent1,PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent sender1 = PendingIntent.getBroadcast(CourseDetails.this, ++MainActivity.numAlert, intent1, PendingIntent.FLAG_IMMUTABLE);
                 AlarmManager alarmManager1 = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 alarmManager1.set(AlarmManager.RTC_WAKEUP, trigger1, sender1);
-                break;
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        RecyclerView recyclerView = findViewById(R.id.courseAssessRecView);
+        repository = new Repository(getApplication());
+        final CourseAssessAdapter courseAssessmentAdapter = new CourseAssessAdapter(this);
+        recyclerView.setAdapter(courseAssessmentAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        List<Assessments> filteredAssessments = new ArrayList<>();
+        for (Assessments c : repository.getAllAssessments()) {
+            if (c.getCourseId() == courseId) filteredAssessments.add(c);
+        }
+        courseAssessmentAdapter.setAssessments(filteredAssessments);
+        courseAssessmentAdapter.notifyDataSetChanged();
 
 
+    }
 }

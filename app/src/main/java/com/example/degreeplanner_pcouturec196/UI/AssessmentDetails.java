@@ -2,8 +2,14 @@ package com.example.degreeplanner_pcouturec196.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -17,9 +23,11 @@ import com.example.degreeplanner_pcouturec196.entities.Assessments;
 import com.example.degreeplanner_pcouturec196.entities.Courses;
 import com.example.degreeplanner_pcouturec196.entities.Terms;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,6 +48,7 @@ public class AssessmentDetails extends AppCompatActivity {
     int courseId;
 
     Assessments assessments;
+    Assessments currentAssessment;
 
 
     Repository repository;
@@ -136,6 +145,19 @@ public class AssessmentDetails extends AppCompatActivity {
 
         });
 
+        Button deleteButton = findViewById(R.id.aDetailsDelete);
+        deleteButton.setOnClickListener(view -> {
+
+            for (Assessments assess : repository.getAllAssessments()) {
+                if (assess.getAssessmentId() == assessmentId) currentAssessment = assess;
+            }
+            repository.delete(currentAssessment);
+            Toast.makeText(AssessmentDetails.this, currentAssessment.getAssessmentName() + " was deleted", Toast.LENGTH_LONG).show();
+            finish();
+
+        });
+
+
 
     }
 
@@ -144,6 +166,38 @@ public class AssessmentDetails extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         editAssessDate.setText(sdf.format(myCalendarStart.getTime()));
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_assessmentdetails, menu);
+        return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+
+            case R.id.notifyAssessDate:
+                String startDateFromScreen = editAssessDate.getText().toString();
+                String myFormat = "MM/dd/yy";
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+                Date myDate = null;
+                try {
+                    myDate = sdf.parse(startDateFromScreen);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Long trigger = myDate.getTime();
+                Intent intent = new Intent(AssessmentDetails.this, MyReceiver.class);
+                intent.setAction("AssessmentNotification");
+                intent.putExtra("assessment", " FYI: " + assessmentName + " is on: " + startDateFromScreen);
+                PendingIntent sender = PendingIntent.getBroadcast(AssessmentDetails.this, ++MainActivity.numAlert, intent, PendingIntent.FLAG_IMMUTABLE);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, trigger, sender);
+                return true;
+
+
+         }
+        return super.onOptionsItemSelected(item);
     }
 
 }
