@@ -122,24 +122,33 @@ public class AssessmentDetails extends AppCompatActivity {
                     assessmentCourse = c.getCourseId();
                 }
             }
-            if(assessmentId == -1){
-
-                assessments = new Assessments(0, editAssessName.getText().toString(), editAssessDate.getText().toString(),
-                        editAssessType.getSelectedItem().toString(), assessmentCourse );
-                repository.insert(assessments);
-                Toast.makeText(getApplicationContext(), "New Assessment added!", Toast.LENGTH_SHORT).show();
-                finish();
-
-            }
-            else {
+            //Validation check for valid date
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+            try {
+                Date startDate = sdf.parse(editAssessDate.getText().toString());
 
 
-                assessments = new Assessments(assessmentId, editAssessName.getText().toString(), editAssessDate.getText().toString(),
-                        editAssessType.getSelectedItem().toString(), assessmentCourse);
-                repository.update(assessments);
-                Toast.makeText(getApplicationContext(), "Assessment updated!", Toast.LENGTH_SHORT).show();
-                finish();
+                if (assessmentId == -1) {
 
+                    assessments = new Assessments(0, editAssessName.getText().toString(), editAssessDate.getText().toString(),
+                            editAssessType.getSelectedItem().toString(), assessmentCourse);
+                    repository.insert(assessments);
+                    Toast.makeText(getApplicationContext(), "New Assessment added!", Toast.LENGTH_SHORT).show();
+                    finish();
+
+                } else {
+
+
+                    assessments = new Assessments(assessmentId, editAssessName.getText().toString(), editAssessDate.getText().toString(),
+                            editAssessType.getSelectedItem().toString(), assessmentCourse);
+                    repository.update(assessments);
+                    Toast.makeText(getApplicationContext(), "Assessment updated!", Toast.LENGTH_SHORT).show();
+                    finish();
+
+                }
+            }catch (ParseException e) {
+                Toast.makeText(getApplicationContext(), "Invalid Date entered! Please try again.", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
 
 

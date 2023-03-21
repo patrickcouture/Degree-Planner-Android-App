@@ -198,25 +198,39 @@ public class CourseDetails extends AppCompatActivity {
                     termId = t.getTermId();
                 }
             }
-            if (courseId == -1) {
+            //Validation check for valid date
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+            try {
+                Date startDate = sdf.parse(editCourseStart.getText().toString());
+                Date endDate = sdf.parse(editCourseEnd.getText().toString());
 
-                courses = new Courses(0, editCourseName.getText().toString(), editCourseStart.getText().toString(),
-                        editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
-                        termId, editCourseInst.getText().toString(),
-                        editInstPhone.getText().toString(), editInstEmail.getText().toString());
-                repository.insert(courses);
-                Toast.makeText(getApplicationContext(), "New Course added!", Toast.LENGTH_SHORT).show();
-                finish();
+                if (startDate.after(endDate)) {
+                    Toast.makeText(getApplicationContext(), "Start date must be before end date!", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (courseId == -1) {
 
-            } else {
-                courses = new Courses(courseId, editCourseName.getText().toString(), editCourseStart.getText().toString(),
-                        editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
-                        termId, editCourseInst.getText().toString(),
-                        editInstPhone.getText().toString(), editInstEmail.getText().toString());
-                repository.update(courses);
-                Toast.makeText(getApplicationContext(), "Course updated!", Toast.LENGTH_SHORT).show();
-                finish();
+                        courses = new Courses(0, editCourseName.getText().toString(), editCourseStart.getText().toString(),
+                                editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
+                                termId, editCourseInst.getText().toString(),
+                                editInstPhone.getText().toString(), editInstEmail.getText().toString());
+                        repository.insert(courses);
+                        Toast.makeText(getApplicationContext(), "New Course added!", Toast.LENGTH_SHORT).show();
+                        finish();
 
+                    } else {
+                        courses = new Courses(courseId, editCourseName.getText().toString(), editCourseStart.getText().toString(),
+                                editCourseEnd.getText().toString(), editCourseStatus.getSelectedItem().toString(), editCourseNotes.getText().toString(),
+                                termId, editCourseInst.getText().toString(),
+                                editInstPhone.getText().toString(), editInstEmail.getText().toString());
+                        repository.update(courses);
+                        Toast.makeText(getApplicationContext(), "Course updated!", Toast.LENGTH_SHORT).show();
+                        finish();
+
+                    }
+                }
+            }catch (ParseException e) {
+                Toast.makeText(getApplicationContext(), "Invalid Date entered! Please try again.", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
 
 

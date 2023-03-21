@@ -17,6 +17,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.text.TextWatcher;
+import android.text.Editable;
+
 
 import com.example.degreeplanner_pcouturec196.R;
 import com.example.degreeplanner_pcouturec196.database.Repository;
@@ -57,6 +60,8 @@ public class TermDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_term_details);
+
+
         editTermName = findViewById(R.id.tNameFill);
         editTermStart = findViewById(R.id.tStartFill);
         editTermEnd = findViewById(R.id.tEndFill);
@@ -81,7 +86,7 @@ public class TermDetails extends AppCompatActivity {
         for (Courses c : repository.getAllCourses()) {
             if (c.getTermId() == termId) filteredCourses.add(c);
         }
-        courseAdapter.notifyDataSetChanged();
+
 
         //From DatePicker Video Presented by Carolyn J. Sher-Decusatis
         termstartDate = new DatePickerDialog.OnDateSetListener() {
@@ -126,21 +131,36 @@ public class TermDetails extends AppCompatActivity {
 
         Button saveButton = findViewById(R.id.saveTermDetails);
         saveButton.setOnClickListener(view -> {
-            if(termId == -1){
-                term = new Terms(0, editTermName.getText().toString(), editTermStart.getText().toString(), editTermEnd.getText().toString());
-                repository.insert(term);
-                Toast.makeText(getApplicationContext(), "New Term added!", Toast.LENGTH_SHORT).show();
-                finish();
+            //Validation check for valid date
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+            try {
+                Date startDate = sdf.parse(editTermStart.getText().toString());
+                Date endDate = sdf.parse(editTermEnd.getText().toString());
 
+                if(startDate.after(endDate)){
+                    Toast.makeText(getApplicationContext(), "Start date must be before end date!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if(termId == -1){
+                        term = new Terms(0, editTermName.getText().toString(), editTermStart.getText().toString(), editTermEnd.getText().toString());
+                        repository.insert(term);
+                        Toast.makeText(getApplicationContext(), "New Term added!", Toast.LENGTH_SHORT).show();
+                        finish();
+
+                    }
+                    else {
+                        term = new Terms(termId, editTermName.getText().toString(), editTermStart.getText().toString(), editTermEnd.getText().toString());
+                        repository.update(term);
+                        Toast.makeText(getApplicationContext(), "Term updated!", Toast.LENGTH_SHORT).show();
+                        finish();
+
+                    }
+                }
+
+            } catch (ParseException e) {
+                Toast.makeText(getApplicationContext(), "Invalid Date entered! Please try again.", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
-            else {
-                term = new Terms(termId, editTermName.getText().toString(), editTermStart.getText().toString(), editTermEnd.getText().toString());
-                repository.update(term);
-                Toast.makeText(getApplicationContext(), "Term updated!", Toast.LENGTH_SHORT).show();
-                finish();
-
-            }
-
 
         });
 
@@ -238,7 +258,11 @@ public class TermDetails extends AppCompatActivity {
         final CourseAdapter courseAdapter = new CourseAdapter(this);
         recyclerView.setAdapter(courseAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        courseAdapter.setCourses(allCourses);
+        List<Courses> filteredCourses = new ArrayList<>();
+        courseAdapter.setCourses(filteredCourses);
+        for (Courses c : repository.getAllCourses()) {
+            if (c.getTermId() == termId) filteredCourses.add(c);
+        }
         courseAdapter.notifyDataSetChanged();
     }
 }
